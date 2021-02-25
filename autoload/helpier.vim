@@ -1,14 +1,27 @@
-" Autoload functions for Helpier.
+" Plugin: helpier
+" Maintainer: adigitoleo <adigitoleo@protonmail.com>
 " Homepage: https://github.com/adigitoleo/vim-helpier
 
-let s:opt_bdchars = get(g:, "helpier_border_chars",
-            \ [ "=", "|", "=", "|", ":", ":", ":", ":" ])
 
+function! helpier#FloatingHelp( ... ) abort
+    let l:opt_bdchars = get(g:, "helpier_border_chars",
+                \ [ "=", "|", "=", "|", ":", ":", ":", ":" ])
+    let l:opt_lasthelp = get(g:, "helpier_floatwin_lasthelp", 1)
 
-function! helpier#FloatingHelp( arg ) abort
-    call helpier#CreateFloating('help', s:opt_bdchars)
+    call helpier#CreateFloating('help', l:opt_bdchars)
     try
-        exec "help " .. a:arg
+        if !a:0 || empty(a:1)
+            if l:opt_lasthelp && exists("t:helpier_floatwin_lasthelp")
+                exec "help " .. t:helpier_floatwin_lasthelp
+            else
+                exec "help"
+            endif
+        else
+            if l:opt_lasthelp
+                let t:helpier_floatwin_lasthelp = a:1
+            endif
+            exec "help " .. a:1
+        endif
     catch /^Vim\%((\a\+)\)\=:E149/  " No help for a:arg
         call helpier#DestroyFloating()
         echoerr "Helpier: no help for " .. a:arg
@@ -46,6 +59,7 @@ function! helpier#CreateFloating( buftype, ... ) abort
     call nvim_tabpage_set_var(0, 'helpier_floatwin_id', l:win)
     call nvim_buf_set_option(l:buf, 'buftype', a:buftype)
 endfunction
+
 
 function! helpier#DestroyFloating() abort
     if exists("t:helpier_floatwin_id")

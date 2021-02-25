@@ -1,0 +1,144 @@
+*helpier*	Healthier :help for happier hacking
+
+		Version: 0.1
+		Maintainer: adigitoleo <adigitoleo@protonmail.com>
+		Homepage: https://github.com/adigitoleo/vim-helpier
+
+==============================================================================
+CONTENTS						*helpier-contents*
+
+	1. Introduction ............................... |helpier-introduction|
+	2. Usage ...................................... |helpier-usage|
+	3. Commands ................................... |helpier-commands|
+	4. Configuration .............................. |helpier-configuration|
+
+
+==============================================================================
+INTRODUCTION						*helpier-introduction*
+
+This plugin introduces behaviour to make the `:help` window more isolated. By
+default, vim treats any window that is currently showing a buffer with a
+|'buftype'| of `"help"` as a "help window", but doesn't prevent other buffers
+from entering that window and changing a |window-variable| or introducing
+other potentially unwanted side-effects. Try the following example (neovim
+users: replace `vim` with `nvim`). >
+
+	$ vim -u "NONE"
+	:set list
+	:help
+	:b #
+	:b #
+
+The help file is now littered with |'listchars'|. With |helpier|, the help
+window will automatically close when it is no longer displaying a help file.
+The plugin further ensures that |'wrap'| and |'list'| are always disabled for
+this window.
+
+
+==============================================================================
+USAGE							*helpier-usage*
+
+If you are reading this after entering `:help helpier` at the *vim command
+line, then the plugin is already installed. Otherwise, install it using your
+preferred plugin manager (recommended) or manually (see |plugin| and
+|packages|).
+
+If you are using neovim, the `:H` command will open the help window as a
+floating popup. See also |helpier-:H| and |g:helpier_create_commands|.
+
+The plugin uses |autocommand-events| to trigger the automatic window management.
+All autocommands are registered under the `helpier` |:augroup| and can be
+temporarily disabled with: >
+
+	:augroup helpier | autocmd! | augroup END
+
+NOTE: This will break the floating window, which must be disabled separately: >
+
+	:delcommand H
+
+The plugin will NOT be loaded if |'compatible'| is set.
+
+
+==============================================================================
+COMMANDS						*helpier-commands*
+
+The following commands are provided if |g:helpier_create_commands| is |TRUE|.
+
+						*helpier-:H*
+:H [subject]		Open a floating window and display |:help|. Optionally
+			navigate to the requested |{subject}|. If there is a
+			floating help window for the current |tabpage|
+			already, use that one. If the full width of the screen
+			is less than 80 characters, restrict the floating
+			window to 2/3 of the screen width.
+
+
+==============================================================================
+CONFIGURATION						*helpier-configuration*
+
+The following configuration variables are supported.
+
+------------------------------------------------------------------------------
+						*g:helpier_buftype_matches*
+
+Control the buffer types to be managed by |helpier|. See |'buftype'|.
+
+Type: |list|
+Default: `["help"]`
+
+NOTE: This feature is experimental and may not work as expected. Currently
+only `"help"` and `"quickfix"` have been tested, and quickfix windows only
+work properly if they have lost focus at least once during their lifetime.
+
+------------------------------------------------------------------------------
+						*g:helpier_create_commands*
+
+Toggle creation of the provided commands, see |helpier-commands|.
+
+Type: |Boolean|
+Default: `1`
+
+To define commands manually, you can mimic how the commands are defined in the
+source files. For example, to use `:Help` instead of `:H`, disable this option
+and add the following to your |config| file: >
+
+  command! -nargs=? -complete=help Help call helpier#FloatingHelp(<q-args>)
+
+------------------------------------------------------------------------------
+						*g:helpier_post_command*
+
+Run an internal command after entering a buffer managed by |helpier|.
+
+Type: |string|
+Default: `""`
+
+Example - open help buffers in vertical splits: >
+
+	let g:helpier_post_command = "wincmd L"
+
+------------------------------------------------------------------------------
+						*g:helpier_border_chars*
+
+Set custom characters to use for the |helpier| floating window border.
+
+Type: |list|
+Default: `[ "=", "|", "=", "|", ":", ":", ":", ":" ]`
+
+The border characters are expected in the following order: >
+
+	[top, right, bot, left, top-left, top-right, bot-right, bot-left]
+
+------------------------------------------------------------------------------
+						*g:helpier_floatwin_lasthelp*
+
+Toggle remembering of the last searched help tag for the |helpier| floating
+window.
+
+Type: |Boolean|
+Default: `1`
+
+When enabled, |helpier-:H| without arguments behaves the same as running the
+last |helpier-:H| command (with arguments) for the current |tabpage|.
+
+
+vim:tw=78:ts=8:noet:ft=help:norl:

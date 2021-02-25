@@ -1,4 +1,4 @@
-# Helpier
+# helpier
 
 
 ### Healthier :help for happier hacking
@@ -11,12 +11,12 @@
 - Ensures `set nowrap` for helpfiles
 - Ensures `set nolist` for helpfiles
 - Automatically closes the help window any time you would jump to a normal
-  buffer
+  buffer (e.g. with `:b #` or CTRL-O)
+- Optionally extend the above behaviour to other buffer types (experimental)
 - Command `:H {subject}` to open help in a floating window (neovim only)
 
-The plugin isn't completely robust yet and
-there are a few more features in development.
-See below for known issues.
+Please read `:h helpier` after installing the plugin for more information on
+options and usage.
 
 
 ## Installation
@@ -42,7 +42,13 @@ read `:help packages` for instructions.
 
 ## Known Issues
 
-- Any commands which move the help window to a different tab will break
-  everything; BAD: `:help|wincmd T`, GOOD: `:tabe|help`
-- NoName buffer appears in the buffer list after using the floating window
-- Loading helpfiles from saved sessions is not supported
+- Doesn't close the quickfix window unless it has lost focus at least once
+- Unlisted \[No Name\] buffer appears in `:ls!` after using the floating window
+- The hl-NormalFloat highlight color occasionally won't be set for the
+  floating window (usually fixed after restarting vim)
+- Loading helpfiles from saved sessions is untested and probably won't work
+
+## TODO
+
+- improve support for quickfix and add support for :Man
+- generic command for use in 'keywordprog' to open docs in floating window
