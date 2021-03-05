@@ -1,5 +1,5 @@
 " Plugin: helpier
-" Maintainer: adigitoleo <adigitoleo@protonmail.com>
+" Maintainer: adigitoleo <vim-helpier@adigitoleo.dissimulo.com>
 " Homepage: https://github.com/adigitoleo/vim-helpier
 
 
